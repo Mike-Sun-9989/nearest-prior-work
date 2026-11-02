@@ -1,0 +1,60 @@
+{
+  "source": "atlas_db_v2 (13b_build_db_v2.py)",
+  "embedding_model": "BAAI/bge-m3 (dense, normalized; sections chunked at 2,048 tokens with 256 overlap, chunk mean, renormalized)",
+  "n_articles": 10357,
+  "sections": [
+    "abstract",
+    "introduction",
+    "theory",
+    "method",
+    "results",
+    "robustness",
+    "discussion",
+    "conclusion",
+    "body"
+  ],
+  "articles_with_section": {
+    "abstract": 10348,
+    "introduction": 10286,
+    "theory": 9970,
+    "method": 8693,
+    "results": 8597,
+    "robustness": 4129,
+    "discussion": 9857,
+    "conclusion": 5474,
+    "body": 37
+  },
+  "journals": [
+    "Academy of Management Journal",
+    "Academy of Management Review",
+    "Administrative Science Quarterly",
+    "Journal of Management",
+    "Management Science",
+    "Organization Science",
+    "Strategic Management Journal"
+  ],
+  "years": [
+    1996,
+    2026
+  ],
+  "random_pairs": "200,000 random article pairs per section, seed 42",
+  "name": "npw_offline_package_v2",
+  "built": "2026-10-29 15:18:15",
+  "contents": "article metadata (DOI, title, journal, year) and paper-level section vectors; no article text, no abstracts, no chunk vectors",
+  "previous": "npw_offline_package_v1 (same vectors; v1 had one more metadata column)",
+  "files": {
+    "README.txt": "8e8465af1e03d291acf4d392cd663e2e4627418008b974e1db7c8b247f7621e8",
+    "articles.parquet": "e964118efadb6ebe538f0da1cf9a4bd9df6d6cd46a89cb39120b1859cb043264",
+    "random_pairs.npz": "1b5d2908c147e87a7e01c97b6e90d6fd9f9580c8a96ac527591c871d6c9f4ade",
+    "vectors_abstract.npy": "781148ebf8167d34e0b94ee4a4fce87fbb168a1a0928cfba822716c9b12307c0",
+    "vectors_body.npy": "ddf9dbaffa0b9f80933bcbaa1caf80a003e7f5f32ff8a7d8db0d51e1f03d91fd",
+    "vectors_conclusion.npy": "4e86440d905f74bd9d394a93b7400e856177bafda3974e000c457ecdead5ca28",
+    "vectors_discussion.npy": "d47059a0c86bbc6b946629000698422ef6a5ed643dca9bcd220a0d54677d7ea6",
+    "vectors_introduction.npy": "05325f8e3ec101535e41032246f019fc1b09f25eac3c4f5d141fe14c48e331b9",
+    "vectors_method.npy": "cb82bbc53a177098d392d0c878f6686639e7b80ddee4c11e144f997983c29b19",
+    "vectors_results.npy": "1fb4d570f87cf0310192822b2b26832864fe21c548972bb781365b7c673b28eb",
+    "vectors_robustness.npy": "78823efb5f8af7adb687c9d3143c746d7fc4757cb5199417227fdb0bfc2ac731",
+    "vectors_theory.npy": "554af6ae61510445009ac0aa1853f6649149d3e149366cd7ab37670900ca34ed"
+  },
+  "distribution_notes": "README updated for application 0.3.1; article metadata and numerical files unchanged."
+}

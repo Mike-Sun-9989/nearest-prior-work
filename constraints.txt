@@ -1,0 +1,9 @@
+# Tested encoder stack; setup selects the matching platform build.
+torch==2.11.0
+sentence-transformers==5.6.0
+transformers>=4.51,<6
+huggingface-hub>=0.34,<3
+mcp>=2,<3
+numpy>=1.26,<3
+pandas>=2,<4
+starlette>=0.37,<2

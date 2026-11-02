@@ -1,0 +1,50 @@
+name: Local app checks
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      real_search:
+        description: 'Download search files and exercise real CPU retrieval (no LLM calls)'
+        type: boolean
+        default: false
+permissions:
+  contents: read
+jobs:
+  test:
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest]
+        python: ['3.11', '3.12', '3.13']
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+          cache: pip
+      - name: Install through launcher
+        run: python setup_local.py --cpu --install-only
+      - name: Select isolated Python
+        shell: bash
+        run: |
+          if [ "$RUNNER_OS" = "Windows" ]; then
+            echo "$GITHUB_WORKSPACE/.venv/Scripts" >> "$GITHUB_PATH"
+          else
+            echo "$GITHUB_WORKSPACE/.venv/bin" >> "$GITHUB_PATH"
+          fi
+      - name: Install app and tests
+        run: python -m pip install -c constraints.txt -e ".[test]"
+      - run: python -m pip check
+      - run: python -m pytest -q
+      - run: python tools/check_release.py
+      - name: Build wheel
+        run: python -m pip wheel . --no-deps -w dist
+      - name: Verify wheel
+        shell: bash
+        run: python tools/check_release.py --wheel dist/nearest_prior_work-*.whl
+      - name: Real CPU search (manual opt-in)
+        if: github.event_name == 'workflow_dispatch' && inputs.real_search && matrix.python == '3.12'
+        run: python tools/smoke_local.py --device cpu --prepare
