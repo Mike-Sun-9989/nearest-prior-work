@@ -37,7 +37,8 @@ def stop_process(process):
             # The worker creates its own session; descendants include the CLI process.
             import signal
             try: os.killpg(process.pid, signal.SIGTERM)
-            except ProcessLookupError: pass
+            # No session yet means no descendants, so signalling the worker itself is enough.
+            except ProcessLookupError: process.terminate()
         process.join(timeout=5)
         if process.is_alive(): process.kill(); process.join(timeout=5)
 
@@ -62,7 +63,9 @@ class Jobs:
             parent, child = ctx.Pipe(duplex=False)
             p = ctx.Process(target=entry, args=(child, kind, payload), daemon=True)
             p.start(); child.close()
-            self.items[token] = {'state': 'running', 'process': p, 'started': time.monotonic()}
+            # Only one thread may wait on the worker: a second one can see it reaped and report it as alive.
+            stop_lock = threading.Lock()
+            self.items[token] = {'state': 'running', 'process': p, 'stop_lock': stop_lock, 'started': time.monotonic()}
         def watch():
             deadline = time.monotonic() + (600 if kind == 'outline' else 90)
             result = None
@@ -72,15 +75,18 @@ class Jobs:
                         result = parent.recv(); break
                     with self.lock:
                         if self.items.get(token, {}).get('state') != 'running': return
-                    if not p.is_alive(): break
+                    with stop_lock:
+                        alive = p.is_alive()
+                    if not alive: break
                 if result is None:
                     result = {'state':'error','error':'The model did not reply in time. Check login, connection and model settings, then retry.'}
             except (EOFError, OSError):
                 result = {'state':'error','error':'The model request stopped unexpectedly. Check settings and retry.'}
             finally:
                 parent.close()
-                p.join(timeout=1)
-                stop_process(p)
+                with stop_lock:
+                    p.join(timeout=1)
+                    stop_process(p)
             with self.lock:
                 if self.items.get(token, {}).get('state') == 'running': self.items[token].update(result)
         threading.Thread(target=watch, daemon=True).start()
@@ -90,7 +96,7 @@ class Jobs:
         with self.lock:
             job = self.items.get(token)
             if not job: raise ValueError('This request has expired. Please retry.')
-            return {k:v for k,v in job.items() if k not in ('process','started')} | {'seconds':round(time.monotonic()-job['started'])}
+            return {k:v for k,v in job.items() if k not in ('process','stop_lock','started')} | {'seconds':round(time.monotonic()-job['started'])}
 
     def cancel(self, token):
         with self.lock:
@@ -98,7 +104,8 @@ class Jobs:
             if not job: return
             job['state'] = 'cancelled'
             job.pop('result', None)
-        stop_process(job['process'])
+        with job['stop_lock']:
+            stop_process(job['process'])
         with self.lock: self.items.pop(token, None)
 
     def prune(self):

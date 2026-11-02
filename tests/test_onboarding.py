@@ -1,5 +1,6 @@
 import importlib.util
 import json
+import os
 from pathlib import Path
 import threading
 import time
@@ -10,6 +11,7 @@ import httpx
 import pytest
 from nearest_prior_work import local, structure
 from nearest_prior_work.server.preparation import SearchPreparation
+from nearest_prior_work.server import jobs as jobs_module
 from nearest_prior_work.server.jobs import Jobs
 from nearest_prior_work.server.web import build_local_app
 from starlette.testclient import TestClient
@@ -162,3 +164,32 @@ def test_model_jobs_complete_cancel_and_clear():
         assert not process.is_alive() and token not in jobs.items
     finally:
         jobs.close();server.shutdown();server.server_close()
+
+
+def test_cancel_right_after_start_reports_the_worker_stopped():
+    jobs=Jobs()
+    try:
+        for _ in range(5):
+            token=jobs.start('test',{'model':CFG})
+            process=jobs.items[token]['process']
+            json.dumps(jobs.get(token))
+            jobs.cancel(token)
+            assert not process.is_alive() and process.exitcode is not None and token not in jobs.items
+    finally:
+        jobs.close()
+
+
+@pytest.mark.skipif(os.name=='nt',reason='Windows stops workers with taskkill')
+def test_worker_without_a_session_is_signalled_directly(monkeypatch):
+    calls=[]
+    class Worker:
+        pid=999999
+        alive=True
+        def is_alive(self):return self.alive
+        def terminate(self):calls.append('terminate');self.alive=False
+        def kill(self):calls.append('kill')
+        def join(self,timeout=None):pass
+    def no_group(pid,sig):raise ProcessLookupError()
+    monkeypatch.setattr(jobs_module.os,'killpg',no_group)
+    jobs_module.stop_process(Worker())
+    assert calls==['terminate']
