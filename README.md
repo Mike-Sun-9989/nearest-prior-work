@@ -31,9 +31,11 @@ Later launches reuse the installation. The app normally opens at `http://127.0.0
 
 **Paste a section.** Paste an abstract, theory section, method passage or other text, and choose what to compare it with. This does not call a language model.
 
+**Choose what to compare before you search.** **Find closest by** sits above **Find similar articles**. Choose a section to search by that section alone, for example Theory or Method, or keep **All sections (average)**.
+
 **Indexed article.** Enter the DOI of an article in the bundled collection. The collection does not contain every article from the seven journals, so the page lists what it covers and offers **Paste a section** when a DOI is not found. This uses existing section vectors, excludes the source article, and does not call a language model or an external metadata service.
 
-Search options filter journals and years and select the number of results. **Find closest by** searches the full eligible collection for the selected section; it does not merely reorder an earlier result list. CSV exports and copied DOIs follow the displayed order. Exports include the index version, ranking dimension and filters, but not submitted manuscript text.
+Search options filter journals and years and select the number of results. A section choice searches the full eligible collection by that section; it does not reorder an earlier result list. **Search again by** on the results page does the same. CSV exports and copied DOIs follow the displayed order. Exports include the index version, ranking dimension and filters, but not submitted manuscript text.
 
 ## Connect your language model
 
@@ -56,7 +58,7 @@ The collection includes Academy of Management Journal, Academy of Management Rev
 Results show article metadata and section similarity scores. They do not contain abstracts or article full text. Years reflect the indexed publication metadata and may be online-first years. Some articles have missing DOI or year metadata; these are preserved in the index.
 
 - List positions use the current ranking and filters. Detailed section ranks refer to the whole index of articles with that section, excluding the source article for DOI searches.
-- Overall similarity averages standardized section scores over the sections both articles have. Coverage is shown explicitly; missing sections are not scored as zero.
+- **All sections (average)** averages standardized section scores over the sections both articles have. There is no separate full-text comparison. Coverage is shown explicitly; missing sections are not scored as zero.
 - Percentiles compare with random article pairs, not the percentage of matching content. Short passages should primarily be judged by rank.
 - Similarity is a starting point for reading, not a novelty verdict. Opening a DOI link uses the publisher's website and requires internet access.
 

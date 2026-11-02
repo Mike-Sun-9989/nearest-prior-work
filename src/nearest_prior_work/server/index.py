@@ -268,6 +268,8 @@ class Index:
         if not qv:
             raise QueryError("that article has no indexed sections")
         ranking = canon(rank_by) if rank_by else None
+        if rank_by and mode == "article" and ranking in self.sections and ranking not in qv:
+            raise QueryError(f"This article has no indexed {ranking.capitalize()} section. Choose another section.")
         if rank_by and (ranking is None or ranking not in qv or mode == "passage"):
             raise QueryError("choose a ranking section present in the query")
 

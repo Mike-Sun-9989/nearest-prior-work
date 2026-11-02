@@ -55,8 +55,8 @@ Start your local model service, choose **Local model**, and enter its address an
 2. Review **Preview extracted text**. At this point no language-model call has been made.
 3. Choose **Identify sections**. This sends the extracted text to your selected model. Wait for the section list; you can cancel a slow request without losing the file.
 4. Expand headings to inspect their original text and review the assigned roles. Change a role or choose **Not compared** if needed. The example should have abstract, introduction, theory, method, results and discussion passages; model output may vary.
-5. Once local preparation is complete, choose **Find similar articles**. The first search also loads the search files into memory, so it can take longer than later searches. Wait for **Search complete**.
-6. Use **Find closest by** to search by a particular section. Choose **Export CSV** to download the current result order.
+5. Choose a section in **Find closest by**, or keep **All sections (average)**. Once local preparation is complete, choose **Find similar articles**. The first search also loads the search files into memory, so it can take longer than later searches. Wait for **Search complete**.
+6. Use **Search again by** to search by another section. Choose **Export CSV** to download the current result order.
 
 The homepage's **Try an example search** is a quicker indexed-article demonstration; it does not exercise manuscript identification or call your language model.
 

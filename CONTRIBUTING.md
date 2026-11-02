@@ -17,7 +17,7 @@ Keep this repository focused on the distributable local app. Do not add research
 
 Create an independent environment with the launcher. Use its Python to install `-c constraints.txt -e ".[test]"`, run `-m pytest -q`, then `tools/check_release.py`. A developer environment that shares global site packages is not a clean-install acceptance environment.
 
-Before distribution, build with `python -m pip wheel . --no-deps -w dist`, then run `python tools/check_release.py --wheel dist/nearest_prior_work-0.3.5-py3-none-any.whl` using the environment's Python. When committing from Windows, run `git add --chmod=+x start.command start.sh`; without the executable bit a Mac cannot double-click `start.command`. Review the actual file list, not just `.gitignore`. Scan the export for credentials, personal paths and private notes.
+Before distribution, build with `python -m pip wheel . --no-deps -w dist`, then run `python tools/check_release.py --wheel dist/nearest_prior_work-0.3.6-py3-none-any.whl` using the environment's Python. When committing from Windows, run `git add --chmod=+x start.command start.sh`; without the executable bit a Mac cannot double-click `start.command`. Review the actual file list, not just `.gitignore`. Scan the export for credentials, personal paths and private notes.
 
 ## First-use acceptance
 

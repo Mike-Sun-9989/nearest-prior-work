@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "nearest-prior-work"
-version = "0.3.5"
+version = "0.3.6"
 description = "Local section-level literature similarity search with a bundled index, browser interface and agent tools."
 readme = "README.md"
 requires-python = ">=3.11,<3.14"

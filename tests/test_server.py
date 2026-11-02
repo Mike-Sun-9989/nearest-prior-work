@@ -138,3 +138,25 @@ def test_page_starts_preparation_only_when_it_has_not_failed(web):
     script = c.get('/onboarding.js').text
     assert "if(p.state==='needed')$('prepare').onclick();" in script
     assert "$('prepare').classList.toggle('hidden', p.state !== 'error');" in script
+
+
+def test_section_choice_is_offered_before_searching(web):
+    c, _ = web
+    page = c.get('/').text
+    assert page.index('id="prerank"') < page.index('id="search"') < page.index('id="rankby"')
+    assert 'All sections (average)' in page and 'Overall similarity' not in page
+
+
+def test_section_choice_searches_beyond_the_average_ranking(web):
+    c, _ = web
+    average = c.post('/v1/similar', json={"doi": "10.9999/test.12", "k": 5}).json()
+    theory = c.post('/v1/similar', json={"doi": "10.9999/test.12", "k": 5, "rank_by": "theory"}).json()
+    assert theory['query']['rank_by'] == 'theory' and average['query']['rank_by'] == 'overall'
+    ranks = [r['similarity']['by_section']['theory']['rank'] for r in theory['results']]
+    assert ranks == list(range(1, 6))
+
+
+def test_article_without_the_chosen_section_is_explained(web):
+    c, _ = web
+    out = c.post('/v1/similar', json={"doi": "10.9999/test.3", "rank_by": "method"})
+    assert out.status_code == 400 and 'no indexed Method section' in out.json()['error']
