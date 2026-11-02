@@ -26,14 +26,14 @@ Open **Model settings** and choose one route. This model is used only to identif
 
 1. Follow the [official CLI installation instructions](https://learn.chatgpt.com/docs/cli) if Codex CLI is not installed. Having a ChatGPT subscription alone does not install the CLI.
 2. Open a terminal, run `codex login`, and sign in with the subscription account you intend to use. See [official authentication help](https://learn.chatgpt.com/docs/auth).
-3. Return to this app. Choose **My AI subscription → Codex CLI**, then **Recheck installation and login**. If you just installed the CLI and it cannot be found, close and reopen this app.
+3. Return to this app. Choose **My AI subscription → Codex CLI**, and return to the page. It checks again by itself; **Check again now** does the same. If you just installed the CLI and it cannot be found, close and reopen this app.
 4. Leave **Model** blank to use the agent default. Choose **Test connection**, wait for **Connection verified**, then **Use these settings**.
 
 The connection test makes one small real model call. Section identification also uses your plan allowance. An installed/signed-in indicator alone is not a connection test.
 
 ### Claude Code subscription
 
-Follow [Claude Code setup](https://code.claude.com/docs/en/setup), launch `claude` in a terminal and use `/login` to sign in. Choose **My AI subscription → Claude Code**, recheck, test and use the settings as above.
+Follow [Claude Code setup](https://code.claude.com/docs/en/setup), launch `claude` in a terminal and use `/login` to sign in. Choose **My AI subscription → Claude Code**, return to the page, test and use the settings as above.
 
 ### API key
 

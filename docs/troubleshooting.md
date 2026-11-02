@@ -16,8 +16,8 @@
 | Preparing local search failed | Check internet access and free space in your user cache, then choose Retry preparation. Completed files are reused. Closing just the page does not stop a running preparation. |
 | First search is slow | The search files must be loaded into memory once per app process. Keep the app open; later searches reuse them. On less powerful computers this can take longer. |
 | A long manuscript takes several minutes | Elapsed time remains visible. The app processes smaller portions sequentially to reduce memory use. Keep it open, or cancel waiting and try a single section. A GPU is optional; 16 GB RAM is recommended for comfortable manuscript use. |
-| CLI installation not found | Install the selected CLI using the link in Model settings, sign in, then Recheck installation and login. Reopen this app after a new CLI installation so it sees the updated PATH. |
-| CLI needs an update | Use the agent's official update instructions, then recheck. The app needs the isolation flags offered by current CLI releases. |
+| CLI installation not found | Install the selected CLI using the link in Model settings, sign in, then return to the page or choose Check again now. Reopen this app after a new CLI installation so it sees the updated PATH. |
+| CLI needs an update | Use the agent's official update instructions, then return to the page. The app needs the isolation flags offered by current CLI releases. |
 | Installed but not signed in | Run `codex login`, or run `claude` and use `/login`, in a terminal. Return here and test the connection. |
 | Allowance reached or access denied | Check your subscription/account and the chosen model. Wait for the allowance to reset or select another model you can access. |
 | API key rejected | Replace the key from the same provider's developer console. Check API billing/access separately from any chat subscription. Never paste keys into issue reports. |

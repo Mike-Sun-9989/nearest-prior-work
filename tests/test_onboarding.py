@@ -13,6 +13,7 @@ from nearest_prior_work import local, structure
 from nearest_prior_work.server.preparation import SearchPreparation
 from nearest_prior_work.server import jobs as jobs_module
 from nearest_prior_work.server.jobs import Jobs
+from nearest_prior_work.server import web as web_module
 from nearest_prior_work.server.web import build_local_app
 from starlette.testclient import TestClient
 
@@ -193,3 +194,31 @@ def test_worker_without_a_session_is_signalled_directly(monkeypatch):
     monkeypatch.setattr(jobs_module.os,'killpg',no_group)
     jobs_module.stop_process(Worker())
     assert calls==['terminate']
+
+
+def test_cli_detection_survives_output_the_locale_cannot_decode(monkeypatch):
+    # Under a non-UTF-8 Windows locale, undecodable output used to leave stdout empty and raise a raw TypeError.
+    seen=[]
+    def run(cmd,**kw):
+        seen.append(kw)
+        return SimpleNamespace(returncode=0,stdout=None,stderr=None)
+    monkeypatch.setattr(structure,'cli_path',lambda provider:'agent')
+    monkeypatch.setattr(structure.subprocess,'run',run)
+    out=structure.find_clis()
+    assert all(x['found'] and not x['compatible'] for x in out.values())
+    assert seen and all(kw['encoding']=='utf-8' and kw['errors']=='replace' for kw in seen)
+
+
+def test_setup_guide_is_labelled_and_rechecks_on_return(index):
+    with TestClient(build_local_app(index),base_url='http://127.0.0.1',client=('127.0.0.1',1)) as c:
+        page,script=c.get('/').text,c.get('/onboarding.js').text
+    assert 'id="guide-title">Setup guide' in page and 'Check again now' in page
+    assert "addEventListener('focus'" in script and "$('cli-guide').open=!ready" in script
+
+
+def test_unexpected_type_errors_do_not_reach_the_page(index,monkeypatch):
+    def broken():raise TypeError("argument of type 'NoneType' is not iterable")
+    monkeypatch.setattr(web_module,'find_clis',broken)
+    with TestClient(build_local_app(index),base_url='http://127.0.0.1',client=('127.0.0.1',1)) as c:
+        response=c.get('/v1/model/clis')
+    assert 'NoneType' not in response.text and response.json()['error']

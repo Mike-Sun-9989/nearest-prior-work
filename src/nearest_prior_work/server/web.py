@@ -106,7 +106,7 @@ def build_local_app(index, model_transport=None):
         async def guarded(request):
             try:
                 return await fn(request)
-            except (QueryError, ModelError, ValueError, TypeError) as e:
+            except (QueryError, ModelError, ValueError) as e:
                 return JSONResponse({"error": str(e)}, 400, headers={"Cache-Control": "no-store"})
             except Exception:
                 # Never echo provider bodies, credentials, paths or manuscript text.

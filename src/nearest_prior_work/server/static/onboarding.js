@@ -103,14 +103,22 @@ providerChanged=function() {
     $('agent-login').textContent=p==='codex-cli'?'codex login':'claude → /login';
   }
 };
+function cliReady(p) {
+  const c=state.clis?.[p];
+  return !!(c?.found&&c.compatible&&c.signed_in===true);
+}
 showCli=function() {
   const p=$('provider').value;
   if(providers[p][1]!=='cli')return;
-  const c=state.clis?.[p];
-  $('cli-status').textContent=!state.clis?'Checking installation and login…':!c?.found?'Installation not found. Follow the steps below.':
-    !c.compatible?'An update is needed. Follow the installation instructions, then recheck.':
-    c.signed_in===false?'Installed · Sign in using the steps below.':c.signed_in===true?'Installed and signed in · Test connection to check access.':
-    'Installed · Login could not be confirmed. Sign in and test the connection.';
+  const c=state.clis?.[p], ready=cliReady(p);
+  $('cli-guide').open=!ready;
+  $('guide-title').textContent=ready?'Setup guide · nothing more to do':'Setup guide · follow these steps';
+  $('step-install').classList.toggle('hidden',!!state.clis&&!!c?.found&&!!c.compatible);
+  $('step-login').classList.toggle('hidden',ready);
+  $('cli-status').textContent=!state.clis?'Checking installation and login…':!c?.found?'Not installed yet. Follow the setup guide below.':
+    !c.compatible?'An update is needed. Follow the setup guide below.':
+    c.signed_in===false?'Installed · Sign in using the setup guide below.':c.signed_in===true?'Installed and signed in. Choose Test connection to finish.':
+    'Installed · Sign-in could not be confirmed. Sign in if needed, then choose Test connection.';
 };
 async function recheck() {
   const id=++detection; $('recheck').disabled=true; $('cli-status').textContent='Checking installation and login…';
@@ -119,6 +127,10 @@ async function recheck() {
   finally {if(!state.busy)$('recheck').disabled=false;}
 }
 $('recheck').onclick=recheck;
+// Installing and signing in happen in another window, so check again on return instead of asking for a click.
+window.addEventListener('focus',()=>{
+  if($('modeldialog').open&&!state.busy&&kind()==='cli'&&!cliReady($('provider').value))recheck();
+});
 openModel=async function() {
   if(state.busy)return;
   const cfg=state.model;
@@ -126,7 +138,13 @@ openModel=async function() {
   fillProviders(cfg?.provider);
   if(cfg){$('modelname').value=cfg.model||'';$('baseurl').value=cfg.base_url||providers[cfg.provider][2];$('modelkey').value=cfg.api_key||'';$('effort').value=cfg.effort||'low';}
   $('modeldialog').showModal();
-  if(kind()==='cli')await recheck();
+  if(kind()==='cli'){
+    await recheck();
+    if(!cfg&&!cliReady($('provider').value)){
+      const other=Object.keys(providers).find(x=>providers[x][1]==='cli'&&cliReady(x));
+      if(other){$('provider').value=other;providerChanged();}
+    }
+  }
 };
 $('settings').onclick=$('configure').onclick=openModel;
 $('provider').onchange=()=>providerChanged();

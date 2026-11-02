@@ -39,7 +39,7 @@ Search options filter journals and years and select the number of results. **Fin
 
 Open **Model settings**. This is needed only to identify manuscript sections.
 
-- **My AI subscription:** the dialog links to official Codex CLI or Claude Code installation instructions, shows the sign-in step and lets you **Recheck installation**. Install and sign in first, then test the connection. The default model can be left blank. The app invokes the agent with tools disabled, temporary working files and no persistent session. Usage counts toward the user's plan.
+- **My AI subscription:** the dialog links to official Codex CLI or Claude Code installation instructions, and shows a **Setup guide** with only the steps still needed. It checks again when you return to the page, and selects a CLI that is already signed in. Install and sign in first, then test the connection. The default model can be left blank. The app invokes the agent with tools disabled, temporary working files and no persistent session. Usage counts toward the user's plan.
 - **API key:** choose a provider, enter your key, then **Load available models** and choose a chat-capable model. If the provider cannot list models, enter the exact model ID from its console. For a custom OpenAI-compatible service, its **API base URL** is shown directly in the form. API usage is billed by your provider.
 - **Local model:** connect a running Ollama instance if you want section identification to stay on your computer as well.
 

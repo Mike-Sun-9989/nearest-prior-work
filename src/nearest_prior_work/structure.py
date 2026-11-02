@@ -77,22 +77,23 @@ def find_clis():
             try:
                 r = subprocess.run([p, "--version"], capture_output=True, text=True, encoding="utf-8", errors="replace",
                                    timeout=30, env=_cli_env())
-                ver = (r.stdout or r.stderr).strip().splitlines()[0][:60] if (r.stdout or r.stderr).strip() else None
+                text = (r.stdout or r.stderr or "").strip()
+                ver = text.splitlines()[0][:60] if text else None
             except (OSError, subprocess.SubprocessError):
                 p = None
         compatible, signed_in = False, None
         if p:
             try:
                 help_args = ['exec', '--help'] if prov == 'codex-cli' else ['--help']
-                h = subprocess.run([p, *help_args], capture_output=True, text=True, timeout=10, env=_cli_env())
+                h = subprocess.run([p, *help_args], capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=10, env=_cli_env())
                 required = ('--ephemeral', '--ignore-user-config') if prov == 'codex-cli' else ('--strict-mcp-config', '--effort')
-                compatible = h.returncode == 0 and all(flag in h.stdout for flag in required)
+                compatible = h.returncode == 0 and all(flag in (h.stdout or "") for flag in required)
                 login_args = ['login', 'status'] if prov == 'codex-cli' else ['auth', 'status', '--json']
-                login = subprocess.run([p, *login_args], capture_output=True, text=True, timeout=10, env=_cli_env())
+                login = subprocess.run([p, *login_args], capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=10, env=_cli_env())
                 if prov == 'codex-cli':
                     signed_in = login.returncode == 0
                 else:
-                    signed_in = bool(json.loads(login.stdout).get('loggedIn'))
+                    signed_in = bool(json.loads(login.stdout or '').get('loggedIn'))
             except (OSError, ValueError, subprocess.SubprocessError):
                 pass
         out[prov] = {"label": label, "found": bool(p), "version": ver, 'compatible': compatible, 'signed_in': signed_in}
@@ -112,7 +113,7 @@ def _run(cmd, stdin, cwd):
     except subprocess.TimeoutExpired as e:
         raise ModelError('The agent took too long. Check your login and connection, then retry.') from e
     except OSError as e:
-        raise ModelError('The agent could not start. Follow Install and sign in in Model settings, then choose Recheck.') from e
+        raise ModelError('The agent could not start. Follow the setup guide in Model settings, then choose Check again now.') from e
     return r.returncode, r.stdout, r.stderr
 
 
@@ -121,8 +122,8 @@ def cli_failure(label, detail):
     if any(x in lower for x in ('usage limit', 'quota', 'rate limit', 'allowance')):
         return f'{label} usage limit reached. Check your plan allowance or wait before retrying.'
     if any(x in lower for x in ('login', 'log in', 'sign in', 'unauthorized', 'authentication')):
-        return f'{label} needs a valid login. Follow the sign-in steps in Model settings, then Recheck and Test connection.'
-    return f'{label} could not complete the request. Check your login, plan allowance and model name; update the agent, then Recheck and Test connection.'
+        return f'{label} needs a valid login. Follow the setup guide in Model settings, then choose Test connection.'
+    return f'{label} could not complete the request. Check your login, plan allowance and model name; update the agent, then choose Test connection.'
 
 
 def _cli_chat(c, system, user, runner):
